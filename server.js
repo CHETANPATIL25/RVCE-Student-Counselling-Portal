@@ -6,6 +6,8 @@ const authUser = require("./app/routes/auth.routes");
 const students = require("./app/routes/student.routes");
 const teacher = require("./app/routes/teacher.routes");
 const semester = require("./app/routes/semester.route");
+require("dotenv").config({ path: __dirname + "/.env" });
+
 const app = express();
 
 var corsOptions = {
@@ -24,7 +26,7 @@ const db = require("./app/models");
 const Role = db.role;
 
 db.mongoose
-  .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
