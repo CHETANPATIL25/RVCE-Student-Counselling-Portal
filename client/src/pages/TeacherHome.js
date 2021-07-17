@@ -20,6 +20,8 @@ import StudentListForTeacher from "./StudentListForTeacher";
 import EditTeacherProfile from "./EditTeacherProfile";
 import { Button } from "@themesberg/react-bootstrap";
 import ShowStudentWholeDetails from "./ShowStudentWholeDetails";
+import BroadCast from "./BroadCast";
+import Chat from "./components/Main";
 export class TeacherHome extends Component {
   logout() {
     localStorage.removeItem("isLoggedIn");
@@ -82,6 +84,36 @@ export class TeacherHome extends Component {
                     {/* </Nav.Link> */}
                   </Link>
                 </Nav.Item>
+
+                <Nav.Item>
+                  <Link
+                    extact
+                    to={`/broadcast`}
+                    eventKey="profile"
+                    className="mb-sm-3 mb-md-0"
+                    style={{
+                      color: "white",
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faTachometerAlt} className="me-2" />
+                    BroadCast
+                  </Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Link
+                    extact
+                    to={`/chat`}
+                    eventKey="profile"
+                    className="mb-sm-3 mb-md-0"
+                    style={{
+                      color: "white",
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faTachometerAlt} className="me-2" />
+                    Chat
+                  </Link>
+                </Nav.Item>
+
                 <Button onClick={this.logout.bind(this)}>logout</Button>
               </Nav>
             </Navbar.Collapse>
@@ -95,6 +127,9 @@ export class TeacherHome extends Component {
             <Route exact path={`/`}>
               <StudentListForTeacher userData={this.props.data} />
             </Route>
+            <Route path={`/broadcast`}>
+              <BroadCast userData={this.props.data} />
+            </Route>
             <Route path={`/editTeacherProfile`}>
               <EditTeacherProfile userData={this.props.data} />
             </Route>
@@ -103,6 +138,9 @@ export class TeacherHome extends Component {
             </Route>
             <Route path={`/studentwholedetails`}>
               <ShowStudentWholeDetails userData={this.props.data} />
+            </Route>
+            <Route path={`/chat`}>
+              <Chat userData={this.props.data} />
             </Route>
             <Route path={`/semester`}>
               <Semester

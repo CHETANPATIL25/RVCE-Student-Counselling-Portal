@@ -8,6 +8,13 @@ const teacher = require("./app/routes/teacher.routes");
 const semester = require("./app/routes/semester.route");
 require("dotenv").config({ path: __dirname + "/.env" });
 
+var admin = require("firebase-admin");
+
+var serviceAccount = require("./webrtc-30da6-firebase-adminsdk-ai6ug-720bfbcce9.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 const app = express();
 
 var corsOptions = {
@@ -51,9 +58,69 @@ app.use("/", students);
 app.use("/", teacher);
 app.use("/", semester);
 
+app.post("/broadcast", (req, res) => {
+  // The topic name can be optionally prefixed with "/topics/".
+  const condition = "'broadcast' in topics";
+
+  // See documentation on defining a message payload.
+  const message = {
+    webpush: {
+      notification: {
+        title: req.body.title,
+        body: req.body.body,
+        icon: req.body.image,
+      },
+    },
+    condition: condition,
+  };
+
+  // Send a message to devices subscribed to the provided topic.
+  admin
+    .messaging()
+    .send(message)
+    .then((response) => {
+      // Response is a message ID string.
+      res.send(response);
+      console.log("Successfully sent message:", response);
+    })
+    .catch((error) => {
+      res.send(error);
+      console.log("Error sending message:", error);
+    });
+});
+
+app.post("/init-notification", (req, res) => {
+  admin
+    .messaging()
+    .subscribeToTopic([req.body.id], "broadcast")
+    .then((response) => {
+      // See the MessagingTopicManagementResponse reference documentation
+      // for the contents of response.
+      res.send(response);
+
+      console.log("Successfully subscribed to topic:", response);
+    })
+    .catch((error) => {
+      res.send(error);
+      console.log("Error subscribing to topic:", error);
+    });
+});
+
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
 
-app.listen(PORT, () => {
+var serverL = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+
+const server = require("http").createServer(app);
+
+const io = require("socket.io")(serverL, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
+const socketManage = require("./socketManage")(io);
+io.on("connection", socketManage);

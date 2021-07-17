@@ -22,6 +22,7 @@ import Profile from "./Profile";
 import EditStudentProfile from "./EditStudentProfile";
 import Semester from "./Semester";
 import Counsellor from "./Counsellor";
+import Chat from "./components/Main";
 import EditSemesterDetails from "./EditSemesterDetails";
 // import { Button } from "react-bootstrap";
 export class StudentHome extends Component {
@@ -112,6 +113,20 @@ export class StudentHome extends Component {
                     Counsellor
                   </Link>
                 </Nav.Item>
+                <Nav.Item>
+                  <Link
+                    extact
+                    to={`/chat`}
+                    eventKey="profile"
+                    className="mb-sm-3 mb-md-0"
+                    style={{
+                      color: "white",
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faTachometerAlt} className="me-2" />
+                    Chat
+                  </Link>
+                </Nav.Item>
                 <Button onClick={this.logout.bind(this)}>logout</Button>
               </Nav>
             </Navbar.Collapse>
@@ -124,6 +139,9 @@ export class StudentHome extends Component {
           <Switch>
             <Route path={`/profile`}>
               <Profile />
+            </Route>
+            <Route path={`/chat`}>
+              <Chat userData={this.props.data} />
             </Route>
             <Route path={`/editStudentProfile`}>
               <EditStudentProfile userData={this.props.data} />
