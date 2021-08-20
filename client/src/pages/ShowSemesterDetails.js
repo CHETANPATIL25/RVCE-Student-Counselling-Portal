@@ -6,6 +6,10 @@ import { Link, Redirect } from "react-router-dom";
 import { Nav, Row, Col } from "@themesberg/react-bootstrap";
 import axios from "axios";
 import { APP_URL } from "../environment";
+import jsPDF from 'jspdf';
+import * as htmlToImage from 'html-to-image';
+import { toPng, toJpeg, toBlob, toPixelData, toSvg } from 'html-to-image';
+
 export class ShowSemesterDetails extends Component {
   // state = {
   //   usn: "",
@@ -46,7 +50,27 @@ export class ShowSemesterDetails extends Component {
     //     });
     //   }
     // } catch (error) {}
+
+    
   }
+
+  printDocument() {  
+     
+      htmlToImage.toPng(document.getElementById('semester-detail-id'), { quality: 0.95 })
+        .then(function (dataUrl) {
+          var link = document.createElement('a');
+          link.download = 'my-image-name.jpeg';
+          const pdf = new jsPDF();
+          const imgProps= pdf.getImageProperties(dataUrl);
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+          pdf.addImage(dataUrl, 'PNG', 0, 0,pdfWidth, pdfHeight);
+          pdf.save("semesterInfo.pdf"); 
+        });
+       
+  }  
+
+
   render() {
     return (
       <div>
@@ -54,8 +78,8 @@ export class ShowSemesterDetails extends Component {
           <div class="">
             <div class="row container d-flex justify-content-center mx-auto my-5">
               <div>
-                <div class="card user-card-full">
-                  <div class="row m-l-0 m-r-0">
+                <div class="card user-card-full" >
+                  <div class="row m-l-0 m-r-0" id="semester-detail-id">
                     <div class="col-sm-12">
                       <div class="card-block">
                         <h6 class="m-b-10  b-b-default f-w-600">Information</h6>
@@ -222,9 +246,22 @@ export class ShowSemesterDetails extends Component {
                             </h6>
                           </div>
                         </div>
+                        
                       </div>
                     </div>
                   </div>
+                  {
+                    localStorage.getItem("@usertype") !== null && localStorage.getItem("@usertype") === "teacher" ?
+                    <div class="row">
+                      <div class="col-sm-6">
+                      </div>
+                      <div class="col-sm-6 m-l-0 m-r-0">
+                        <button type="button" class="btn btn btn-outline-primary" onClick={this.printDocument.bind(this)} >Generate PDF</button>
+                      </div>
+                    </div>
+                    :
+                    null
+                  }
                 </div>
               </div>
             </div>
